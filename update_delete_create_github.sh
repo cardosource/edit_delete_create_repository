@@ -1,6 +1,6 @@
 #! /bin/bash 
 USUARIO="git-cardoso"
-read -p 'Insira o código : '  TOKEN
+TOKEN=0000000000000000000000000000000000
 
 GREEN='\033[0;32m'
 RED='\e[31m'
@@ -13,11 +13,10 @@ NC='\033[0m'
 
 STRIKETHROUGH="\e[9m"
 NSTRIKETHROUGH="\e[0m"
-function connection(){
-    
+
+function connection(){    
     curl $1
     echo -e "${GREEN}${BOLD}CONNECTION ${NBOLD}${NC}"
-    
 }
 
 function create(){
@@ -28,8 +27,7 @@ function create(){
    --header "Content-type: application/json"  \
    --request POST -H 'Authorization: token '$TOKEN  \
    -d '{"name":"'$REPOSITORY'","description":"'$DESCRIPTION'"}'   
-
-    echo -e "${GREEN}${ITALIC}CREATED${NITALIC}${NC}"
+   echo -e "${GREEN}${ITALIC}CREATED${NITALIC}${NC}"
  
 }
 function edit_repositoryName(){
@@ -39,11 +37,11 @@ function edit_repositoryName(){
 
   
    connection  https://api.github.com/repos/$USUARIO/$NEW_REPOSITORY \
-  --header "Content-type: application/json" \
-  -X PATCH  \
-  -H 'Authorization: token '$TOKEN \
-  -d '{"name":"'$OLD_ONE_REPOSITORY'","description":"'$DESCRIPTION'"}'\
-   
+    --header "Content-type: application/json" \
+    -X PATCH  \
+    -H 'Authorization: token '$TOKEN \
+    -d '{"name":"'$OLD_ONE_REPOSITORY'","description":"'$DESCRIPTION'"}'
+   echo -e "${YELLOW}${ITALIC}UPDATED${NITALIC}${NC}"
 
 }
 
@@ -55,7 +53,7 @@ function edit_description(){
     --header "Content-type: application/json" \
     -X PATCH  \
     -H 'Authorization: token '$TOKEN \
-    -d '{"name":"'$REPOSITORY'","description":"'$NEW_DESCRIPTION'"}'\  
+    -d '{"name":"'$REPOSITORY'","description":"'$NEW_DESCRIPTION'"}'
     echo -e "${YELLOW}${ITALIC}UPDATED${NITALIC}${NC}"
 
 }
@@ -64,27 +62,40 @@ function delete(){
     read -p "Delete repository : " REPOSITORY
 
     connection  https://api.github.com/repos/$USUARIO/$REPOSITORY \
-     --header "Content-type: application/json" \
+      --header "Content-type: application/json" \
       -X DELETE \
-      -H 'Authorization: token '$TOKEN \
-      echo -e "${RED}${STRIKETHROUGH}DELETED${NSTRIKETHROUGH}${NC}"
+      -H 'Authorization: token '$TOKEN 
+     echo -e "${RED}${STRIKETHROUGH}DELETED${NSTRIKETHROUGH}${NC}"
 
 }
 echo "+------------------------------------------------------------------------+"
 
 echo -e " Saudacoes ${USER} \n" | tr [[:lower:]] [[:upper:]]
 echo -e "O que deseja:"
-echo -e "${GREEN}${ITALIC} u ${NITALIC}${NC}  - Criar um Repositorio no Git Hub"
-echo -e "${RED}${ITALIC} d ${NITALIC}${NC}  - Apagar um Repositorio no Git Hub"
-echo -e "${YELLOW}${ITALIC} d- ${NITALIC}${NC} - Editar apenas a descrição de um Repositorio no Git Hub"
-echo -e "${GREEN}${ITALIC} r ${NITALIC}${NC}  - Editar nome do repositorio"
+echo -e "${GREEN}${ITALIC} c ${NITALIC}${NC}  - ${GREEN}${ITALIC}Criar${NITALIC}${NC} um Repositorio no GitHub"
+echo -e "${RED}${ITALIC} x ${NITALIC}${NC}  - ${RED}${ITALIC}Excluir${NITALIC}${NC} um Repositorio no GitHub"
+echo -e "${GREEN}${ITALIC} r ${NITALIC}${NC}  - Editar nome do ${GREEN}${ITALIC}repositorio${NITALIC}${NC}  no GitHub"
+echo -e "${YELLOW}${ITALIC} d ${NITALIC}${NC}  - Editar apenas a ${YELLOW}${ITALIC}descrição${NITALIC}${NC} de um Repositorio no GitHub"
+echo -e " e   - Sair"
+
 
 echo "+------------------------------------------------------------------------+"
-# read -p "User name:" username_github
-# read -p "Access Token ":  access_token 
-# echo -e "${GREEN}${BOLD}CONNECTION ${NBOLD}${NC}"
-
-#create
-#delete
-#edit_description
-#edit_repositoryName
+while :
+do
+  read AUTGITHUB
+  case $AUTGITHUB in
+	c)
+	create ;;
+	x)
+	delete ;;
+    r)
+	edit_repositoryName ;;
+    d)
+	edit_description ;;
+    e)
+    break  ;;
+	
+    
+  esac
+done
+echo "Até a proxima :)"
